@@ -1,0 +1,11 @@
+server:
+  port: 8000
+spring:
+  redis:
+    host: local
+    database: 0
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: 111
+    username: 111
+    password: 111

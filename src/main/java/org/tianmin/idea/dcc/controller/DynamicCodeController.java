@@ -4,6 +4,7 @@ import groovy.lang.GroovyClassLoader;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @Author wangtianmin
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @Description: TODO
  * @Version 1.0
  */
+
+@RestController
 @RequestMapping("/dynamic-code")
 public class DynamicCodeController {
     @GetMapping("/get-method")
