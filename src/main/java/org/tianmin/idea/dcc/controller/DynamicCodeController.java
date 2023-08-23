@@ -1,13 +1,12 @@
 package org.tianmin.idea.dcc.controller;
 
-import groovy.lang.GroovyClassLoader;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.tianmin.idea.dcc.service.DemoService;
 
 /**
  * @Author wangtianmin
@@ -20,12 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/dynamic-code")
 public class DynamicCodeController {
 
-    @Autowired
-    StringRedisTemplate stringRedisTemplate;
 
-    @GetMapping("/get-method")
-    public ResponseEntity<?> getMethod(String description) {
-        String dccValue = stringRedisTemplate.opsForValue().get("dcc:");
-        return ResponseEntity.ok("description");
+    @Autowired
+    DemoService demoService;
+
+    @GetMapping("/demo-service-test-method")
+    public ResponseEntity<?> demoServiceTestMethod(@RequestParam("word") String word) {
+        String s = demoService.demoServiceTestMethod(word);
+        return ResponseEntity.ok(s);
     }
 }
