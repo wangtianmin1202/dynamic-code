@@ -83,12 +83,26 @@ public class DccServiceImpl implements DccService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteAndInvalidate(DynamicCode dynamicCode) {
-
+        String deleteSql = "DELETE FROM dynamic_code WHERE id = %s";
+        jdbcTemplate.execute(String.format(deleteSql, dynamicCode.getId()));
+        String mainKey = (dynamicCode.getType().equals("before")
+                ? DccConsts.REDIS_PERFIX_BEFORE : DccConsts.REDIS_PERFIX_RETURN)
+                + dynamicCode.getDccCode();
+        stringRedisTemplate.delete(mainKey);
+        GroovyClassCache.cache.invalidate(mainKey);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateGroovy(DynamicCode dynamicCode) {
-
+        String updateSql = "UPDATE dynamic_code SET groovy_text = '%s' WHERE id = %s";
+        jdbcTemplate.execute(String.format(updateSql, dynamicCode.getGroovyText(), dynamicCode.getId()));
+        String mainKey = (dynamicCode.getType().equals("before")
+                ? DccConsts.REDIS_PERFIX_BEFORE : DccConsts.REDIS_PERFIX_RETURN)
+                + dynamicCode.getDccCode();
+        stringRedisTemplate.opsForValue().set(mainKey, dynamicCode.getGroovyText());
+        //
+        GroovyClassCache.cache.invalidate(mainKey);
+        GroovyClassCache.cache.put(mainKey, loader.parseClass(dynamicCode.getGroovyText(), mainKey + ".groovy"));
     }
 }
