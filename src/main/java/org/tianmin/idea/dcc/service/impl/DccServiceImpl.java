@@ -4,8 +4,11 @@ import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.tianmin.idea.dcc.consts.DccConsts;
+import org.tianmin.idea.dcc.entity.DynamicCode;
 import org.tianmin.idea.dcc.service.DccService;
 import org.tianmin.idea.dcc.utils.GroovyClassCache;
 
@@ -25,9 +28,12 @@ public class DccServiceImpl implements DccService {
     GroovyClassLoader loader = new GroovyClassLoader();
     MessageDigest md = MessageDigest.getInstance("MD5");
     private final StringRedisTemplate stringRedisTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    public DccServiceImpl(StringRedisTemplate stringRedisTemplate) throws NoSuchAlgorithmException {
+    public DccServiceImpl(StringRedisTemplate stringRedisTemplate,
+                          JdbcTemplate jdbcTemplate) throws NoSuchAlgorithmException {
         this.stringRedisTemplate = stringRedisTemplate;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
@@ -54,5 +60,35 @@ public class DccServiceImpl implements DccService {
                 .get(mainKey, () -> loader.parseClass(groovyString, mainKey + ".groovy"));
         GroovyObject groovyObject = (GroovyObject) groovyClass.newInstance();
         groovyObject.invokeMethod("proceed", allArgs);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void insertNew(DynamicCode dynamicCode) {
+        log.info(dynamicCode.getGroovyText());
+        String insertSql = "" +
+                "INSERT dynamic_code ( dcc_code, type, groovy_text ) VALUES ('%s','%s','%s')";
+        jdbcTemplate.execute(String.format(insertSql, dynamicCode.getDccCode(),
+                dynamicCode.getType(),
+                dynamicCode.getGroovyText()));
+        String mainKey = (dynamicCode.getType().equals("before")
+                ? DccConsts.REDIS_PERFIX_BEFORE : DccConsts.REDIS_PERFIX_RETURN)
+                + dynamicCode.getDccCode();
+        stringRedisTemplate.opsForValue().set(mainKey, dynamicCode.getGroovyText());
+        //
+        GroovyClassCache.cache.invalidate(mainKey);
+        GroovyClassCache.cache.put(mainKey, loader.parseClass(dynamicCode.getGroovyText(), mainKey + ".groovy"));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteAndInvalidate(DynamicCode dynamicCode) {
+
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateGroovy(DynamicCode dynamicCode) {
+
     }
 }

@@ -1,5 +1,7 @@
 package org.tianmin.idea.dcc.service;
 
+import org.tianmin.idea.dcc.entity.DynamicCode;
+
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -12,4 +14,10 @@ public interface DccService {
     void proceedBefore(String dccCode, Object[] args) throws InstantiationException, IllegalAccessException, ExecutionException;
 
     void proceedReturn(String dccCode, Object[] allArgs) throws InstantiationException, IllegalAccessException, ExecutionException;
+
+    void insertNew(DynamicCode dynamicCode);
+
+    void deleteAndInvalidate(DynamicCode dynamicCode);
+
+    void updateGroovy(DynamicCode dynamicCode);
 }
