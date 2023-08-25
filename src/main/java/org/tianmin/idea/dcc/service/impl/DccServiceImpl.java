@@ -40,7 +40,7 @@ public class DccServiceImpl implements DccService {
     public void proceedBefore(String dccCode, Object[] args) throws
             ExecutionException, InstantiationException, IllegalAccessException {
         String mainKey = DccConsts.REDIS_PERFIX_BEFORE + dccCode;
-        if (!(boolean) stringRedisTemplate.hasKey(mainKey)) return;
+        if (Boolean.FALSE.equals(stringRedisTemplate.hasKey(mainKey))) return;
         String groovyString = stringRedisTemplate.opsForValue().get(mainKey);
         Class<?> groovyClass = GroovyClassCache
                 .cache
@@ -53,7 +53,7 @@ public class DccServiceImpl implements DccService {
     public void proceedReturn(String dccCode, Object[] allArgs) throws
             InstantiationException, IllegalAccessException, ExecutionException {
         String mainKey = DccConsts.REDIS_PERFIX_RETURN + dccCode;
-        if (!(boolean) stringRedisTemplate.hasKey(mainKey)) return;
+        if (!Boolean.TRUE.equals(stringRedisTemplate.hasKey(mainKey))) return;
         String groovyString = stringRedisTemplate.opsForValue().get(mainKey);
         Class<?> groovyClass = GroovyClassCache
                 .cache
