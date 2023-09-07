@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * @Author wangtianmin
  * @Date 2023/8/23 10:51
- * @Description: TODO
+ * @Description: groovy动态代码核心实现
  * @Version 1.0
  */
 @Service
