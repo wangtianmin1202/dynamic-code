@@ -17,7 +17,7 @@ import java.lang.reflect.Method;
 /**
  * @Author wangtianmin
  * @Date 2023/8/23 09:39
- * @Description: TODO
+ * @Description: 全局bean方法切面拦截
  * @Version 1.0
  */
 @Aspect
