@@ -7,6 +7,8 @@ import org.tianmin.idea.dcc.entity.DynamicCode;
 import org.tianmin.idea.dcc.service.DccService;
 import org.tianmin.idea.dcc.service.DemoService;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @Author wangtianmin
  * @Date 2023/8/22 17:54
@@ -25,7 +27,8 @@ public class DynamicCodeController {
     DccService dccService;
 
     @GetMapping("/demo-service-test-method")
-    public ResponseEntity<?> demoServiceTestMethod(@RequestParam("word") String word) {
+    public ResponseEntity<?> demoServiceTestMethod(HttpServletRequest request) {
+        String word = request.getParameter("word");
         String s = demoService.demoServiceTestMethod(word);
         return ResponseEntity.ok(s);
     }
@@ -35,11 +38,13 @@ public class DynamicCodeController {
         dccService.insertNew(dynamicCode);
         return ResponseEntity.ok(1);
     }
+
     @PostMapping("/update-groovy")
     public ResponseEntity<?> updateGroovy(@RequestBody DynamicCode dynamicCode) {
         dccService.updateGroovy(dynamicCode);
         return ResponseEntity.ok(1);
     }
+
     @DeleteMapping("/delete-and-invalidate")
     public ResponseEntity<?> deleteAndInvalidate(@RequestBody DynamicCode dynamicCode) {
         dccService.deleteAndInvalidate(dynamicCode);
